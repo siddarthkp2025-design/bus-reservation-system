@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bus Ticket Reservation System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+
+<style>
+body{
+    margin:0;
+    font-family:Poppins, sans-serif;
+    background:#0f172a;
+    color:white;
+}
+
+header{
+    background:#020617;
+    padding:18px;
+    font-size:22px;
+    font-weight:600;
+    text-align:center;
+}
+
+.container{
+    max-width:1000px;
+    margin:auto;
+    padding:30px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+    background:#334155;
+}
+
+.panel{
+    margin-top:30px;
+    background:#1e293b;
+    padding:25px;
+    border-radius:12px;
+}
+
+input,select{
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    margin-top:5px;
+    margin-bottom:15px;
+}
+
+button{
+    padding:10px 16px;
+    background:#f59e0b;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-weight:600;
+}
+
+button:hover{
+    background:#fbbf24;
+}
+
+#console{
+    margin-top:30px;
+    background:black;
+    color:#4ade80;
+    padding:20px;
+    border-radius:10px;
+    font-family:"JetBrains Mono";
+    height:220px;
+    overflow:auto;
+}
+
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+🚌 Bus Ticket Reservation System
+</header>
+
+<div class="container">
+
+<div class="grid">
+
+<div class="card" onclick="showPanel('routes')">
+View Routes
+</div>
+
+<div class="card" onclick="showPanel('book')">
+Book Ticket
+</div>
+
+<div class="card" onclick="showPanel('cancel')">
+Cancel Ticket
+</div>
+
+<div class="card" onclick="showPanel('search')">
+Search Ticket
+</div>
+
+</div>
+
+
+<div id="routes" class="panel hidden">
+<h3>Routes</h3>
+
+<table width="100%">
+<tr>
+<th>ID</th>
+<th>From</th>
+<th>To</th>
+<th>Fare</th>
+</tr>
+
+<tr>
+<td>1</td>
+<td>Chennai</td>
+<td>Bangalore</td>
+<td>₹250</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>Chennai</td>
+<td>Coimbatore</td>
+<td>₹200</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>Chennai</td>
+<td>Madurai</td>
+<td>₹150</td>
+</tr>
+
+</table>
+
+</div>
+
+
+
+<div id="book" class="panel hidden">
+
+<h3>Book Ticket</h3>
+
+<label>Route</label>
+<select id="route">
+<option value="1">Chennai → Bangalore</option>
+<option value="2">Chennai → Coimbatore</option>
+<option value="3">Chennai → Madurai</option>
+</select>
+
+<label>Name</label>
+<input id="name">
+
+<label>Seat</label>
+<input id="seat" type="number">
+
+<button onclick="book()">Confirm Booking</button>
+
+</div>
+
+
+
+<div id="cancel" class="panel hidden">
+
+<h3>Cancel Ticket</h3>
+
+<label>Ticket ID</label>
+<input id="cancelid" type="number">
+
+<button onclick="cancelTicket()">Cancel</button>
+
+</div>
+
+
+
+<div id="search" class="panel hidden">
+
+<h3>Search Ticket</h3>
+
+<label>Ticket ID</label>
+<input id="searchid" type="number">
+
+<button onclick="searchTicket()">Search</button>
+
+</div>
+
+
+<div id="console"></div>
+
+</div>
+
+
+
+<script>
+
+let inputQueue = []
+let inputBuffer=""
+let pos=0
+let wasmReady=false
+
+function print(txt){
+document.getElementById("console").innerHTML+=txt+"<br>"
+}
+
+function showPanel(id){
+
+document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"))
+
+document.getElementById(id).classList.remove("hidden")
+
+}
+
+
+function book(){
+
+let r=document.getElementById("route").value
+let n=document.getElementById("name").value.replace(/ /g,"_")
+let s=document.getElementById("seat").value
+
+inputQueue=["2\n",r+"\n",n+"\n",s+"\n"]
+
+print("> Booking request sent")
+
+}
+
+function cancelTicket(){
+
+let id=document.getElementById("cancelid").value
+
+inputQueue=["3\n",id+"\n"]
+
+print("> Cancel request sent")
+
+}
+
+function searchTicket(){
+
+let id=document.getElementById("searchid").value
+
+inputQueue=["4\n",id+"\n"]
+
+print("> Search request sent")
+
+}
+
+
+var Module={
+
+print:function(text){
+
+print(text)
+
+},
+
+printErr:function(text){
+
+print(text)
+
+},
+
+stdin:function(){
+
+if(pos>=inputBuffer.length){
+
+if(inputQueue.length==0) return null
+
+inputBuffer=inputQueue.shift()
+
+pos=0
+
+}
+
+return inputBuffer.charCodeAt(pos++)
+
+},
+
+onRuntimeInitialized:function(){
+
+wasmReady=true
+
+print("System Ready")
+
+}
+
+}
+
+</script>
+
+<script src="index.js"></script>
+
+</body>
+</html>
