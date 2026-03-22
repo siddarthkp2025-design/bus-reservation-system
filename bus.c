@@ -55,7 +55,3 @@ int searchSeat(int ticketID) {
     }
     return -1;
 }
-int main() {
-    initSystem();
-    return 0;
-}
