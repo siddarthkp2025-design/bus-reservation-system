@@ -293,6 +293,8 @@ void processInput(char *input) {
 /* ─── Main ─── */
 
 int main() {
+    count = 0;
+    nextTicketID = 1001;
     printf("BusWay Reservation System loaded.\n");
     return 0;
 }
